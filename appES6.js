@@ -55,6 +55,48 @@ class UI {
     }
 }
 
+//Local Storage Class
+class Store {
+    static getBooks(){
+        let books;
+        if (localStorage.getItem('books') === null) {
+            books = [];
+        } else {
+            books = JSON.parse(localStorage.getItem('books'));
+        }
+        return books;
+    }
+
+    static displayBooks(){
+        const books = Store.getBooks();
+        books.forEach(function(book){
+            const ui = new UI;
+            //Add Book to UI
+            ui.addBookToList(book);
+        });  
+
+    }
+
+    static addBook(book){
+        const books = Store.getBooks();
+        books.push(book);
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+
+    static removeBook(isbn){
+        const books = Store.getBooks();
+        books.forEach(function(book, index){
+           if (book.isbn === isbn) {
+               books.splice(index, 1);
+           }          
+        }); 
+        localStorage.setItem('books', JSON.stringify(books)); 
+    }
+}
+
+// DOM Load Event
+document.addEventListener('DOMContentLoaded', Store.displayBooks());
+
 // Event Listener for add Book
 document.getElementById('book-form').addEventListener('submit',function(e) {
     const title = document.getElementById('title').value,
@@ -70,8 +112,10 @@ document.getElementById('book-form').addEventListener('submit',function(e) {
     } else {
         //Add book to list
         ui.addBookToList(book);
+        //Add to local Storage
+        Store.addBook(book);
         // Show success
-        ui.showAlert('Book added', 'success')
+        ui.showAlert('Book added', 'success');
         //Clear fields
         ui.clearFields();
     }
@@ -84,6 +128,11 @@ document.getElementById('book-list').addEventListener('click', function(e) {
     const ui = new UI();
     //Delete Book
     ui.deleteBook(e.target);
+    // Remove from ls
+    Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+    //e.target = <a>
+    //.parentElenebt = <td>
+    //.previousSiblingElement = <td> davor (enthält isbn)
     //Show delete alert
     ui.showAlert('Book removed', 'success');
 
