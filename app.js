@@ -20,7 +20,6 @@ UI.prototype.addBookToList = function(book) {
         <td><a href="#" class="delete">X</a></td>
         `;
         list.appendChild(row);
-    console.log(row);
 }
 //Show alert
 UI.prototype.showAlert = function(message, className) {
